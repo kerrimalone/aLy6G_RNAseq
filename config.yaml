@@ -1,0 +1,5 @@
+WORKDIR: "<path_to_work_dir>"
+SAMPLE_IDS: "<path_to_sample_ids.txt>"
+TRANSCRIPTOME_FILE: "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/gencode.vM23.transcripts.fa.gz"
+ENSEMBL_TRANSCRIPTOME_FILE: "ftp://ftp.ensembl.org/pub/release-98/fasta/mus_musculus/cdna/Mus_musculus.GRCm38.cdna.all.fa.gz"
+SPECIES: "GRCm38"

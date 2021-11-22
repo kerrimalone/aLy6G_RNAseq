@@ -1,0 +1,91 @@
+import os
+from pathlib import Path
+import shutil
+import sys
+import urllib
+
+# Load config file
+configfile: "../config/config.yaml"
+
+# Set working dir from config.yaml
+# workdir: config['WORKDIR']
+
+# Set sample ids variable using path from config.yaml
+SAMPLE_IDS= config['SAMPLE_IDS']
+TRANSCRIPTOME_FILE= config['TRANSCRIPTOME_FILE']
+SPECIES= config['SPECIES']
+
+# Define paths for new local directories
+annotation_path = "/annotation"
+
+def get_sample_ids(SAMPLE_IDS):
+	IDS = list()
+	with open(SAMPLE_IDS, "r") as sample_names:
+		for line in sample_names:
+			IDS.append(line.rstrip())
+	return IDS
+
+IDS = get_sample_ids(SAMPLE_IDS)
+
+rule all:
+	input:
+		directory(expand("mapping/{IDS}_quant", IDS = IDS))
+
+
+#rule qc_check:
+#	input:
+#		"raw_files/{IDS}.fastq.gz"
+#	output:
+#		directory("qc_stats/")
+#	singularity:
+#		"docker://quay.io/biocontainers/fastqc:0.11.7--6"
+#	params:
+#		outdir=lambda wildcards, output: str(Path(output[0]).parent)
+#	shell:
+#		"fastqc --outdir {params.outdir} {input}"
+
+
+# Get transcriptome annotation file from Gencode
+def get_transcriptome_annotation(TRANSCRIPTOME_FILE):
+	workingdir = os.getcwd()
+	annotation_dir = "".join([workingdir, annotation_path])
+	transcriptome_fasta_file = "/".join([annotation_dir, "transcripts.fq.gz"])
+		
+	if not os.path.exists(annotation_dir):
+		os.mkdir(annotation_dir)
+	if not os.path.exists(transcriptome_fasta_file):
+		urllib.request.urlretrieve(TRANSCRIPTOME_FILE, transcriptome_fasta_file)
+
+get_transcriptome_annotation(TRANSCRIPTOME_FILE)
+
+rule create_salmon_index:
+	input:
+		"annotation/transcripts.fq.gz"
+	output:
+		directory(expand("mapping/index/{SPECIES}_index", SPECIES = SPECIES))
+	singularity:
+		"docker://quay.io/biocontainers/salmon:0.14.2--hf69c8f4_1"
+	shell:
+		"salmon index -t {input} -i {output} --gencode"	
+
+rule map_reads_with_salmon:
+	input:
+		reads= "raw_files/{IDS}.fastq.gz",
+		index = expand("mapping/index/{SPECIES}_index", SPECIES = SPECIES)
+	output:
+		directory("mapping/{IDS}_quant")
+	singularity:
+		"docker://quay.io/biocontainers/salmon:0.14.2--hf69c8f4_1"
+	shell:
+		"salmon quant -i {input.index} -l A -r {input.reads} --validateMappings -o {output}"
+
+
+#Rename quant.sf files to sample specific names
+workingdir = os.getcwd()
+mapping_dir = "".join([workingdir, "/mapping"])
+
+for root, dirs, files in os.walk(mapping_dir):
+	for f in files:
+		shutil.move(root+"/"+f, root+"/"+root.split("/")[-1]+".txt")
+
+
