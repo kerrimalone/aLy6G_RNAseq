@@ -1,0 +1,654 @@
+---
+title: "aLy6G placenta figures"
+author: "Kerri Malone"
+date: "20/04/2021"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+library(data.table)
+library(ggpubr)
+library(ggrepel)
+library(knitr)
+library(pheatmap)
+library(RColorBrewer)
+library(rtracklayer)
+library(tidyverse)
+library(viridis)
+
+`%notin%` <- Negate(`%in%`)
+
+```
+
+
+```{r}
+OUTPUT_DIR = "data/output/placenta/"
+
+DE_GENES = paste0(OUTPUT_DIR, "placenta_DE_FDR_0.05.tsv")
+
+ALL_GENES_LOGFC = paste0(OUTPUT_DIR, "placenta_all_genes_logFC.tsv")
+
+GTF_FILE_OUT = paste(OUTPUT_FILE_DIR, "gencode.vM23.annotation.gtf.gz", sep="/")
+GTF_URL = "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/gencode.vM23.annotation.gtf.gz"
+GTF_FILE = paste(OUTPUT_FILE_DIR, "gencode.vM23.annotation.gtf", sep="/")
+
+SIGORA = paste0(OUTPUT_DIR, "/sigora/FDR_0.05_DE_placenta_sigora.tsv")
+
+INPUT_DIR = "data/input/placenta/"
+
+TPM_FILES <- list.files(INPUT_DIR, pattern = "1_abundance", full.names = TRUE)
+TPM_FILES_PLACENTA = TPM_FILES[grepl("placenta", TPM_FILES)]
+
+ECM_GENES = paste0(OUTPUT_DIR, "ECM_genes.csv")
+NUTRIENT_TRANSPORT_GENES = paste0(OUTPUT_DIR, "nutrient_transport.csv")
+
+OUTDIR = paste0(OUTPUT_DIR, "figures/")
+dir.create(OUTDIR)
+
+
+
+#Make annotation file
+if(!file.exists(GTF_FILE)){
+  download.file(GTF_URL, GTF_FILE)
+  R.utils:::gunzip(GTF_FILE_OUT)
+}
+
+```
+#### The data  
+
+Let's have a look at the placenta data.  
+We are considering `r length(TPM_FILES_PLACENTA)` samples:  
+
+```{r}
+gsub("_abundance.txt", "",basename(TPM_FILES_PLACENTA))
+
+```
+
+
+
+```{r warning=FALSE}
+# Making TPM table
+tpms = fread(TPM_FILES_PLACENTA[1])
+tpms = as.data.frame(tpms$gene)
+names(tpms)[1] = "gene_id"
+
+for (file in TPM_FILES_PLACENTA){
+  this_sample = gsub("_abundance.txt", "",basename(file))
+  this_data = fread(file)
+  names(this_data)[2] = this_sample
+  tpms = cbind(tpms, this_data[,2])
+}
+
+```
+
+
+``` {r}
+# Loading in annotation
+gtf = rtracklayer::import(GTF_FILE)
+gtf = as.data.frame(gtf)
+coding_tx = gtf %>% 
+  filter(type == "transcript") %>% 
+  filter(gene_type == "protein_coding")
+
+anno_df<- coding_tx %>% 
+  dplyr::select(transcript_id, gene_id, gene_name) %>%
+  mutate(gene_id_parent = str_split(gene_id, "\\.") %>% map_chr(1))
+
+```
+
+
+
+```{r}
+# Loading in DE results
+de_genes = fread(DE_GENES)
+names(de_genes)[1] = "gene_id_parent"
+
+
+all_genes = fread(ALL_GENES_LOGFC)
+names(all_genes)[1] = "gene_id_parent"
+```
+
+#### Our DE gene set
+As a reminder, we have `r nrow(de_genes)` that pass FDR < 0.05.  
+There are `r de_genes %>% filter(logFC > 0) %>% nrow()` genes with positively increasing changes in expression (logFC), `r de_genes %>% filter(logFC >= 1) %>% nrow()` of which have logFC >= 1.  
+There are `r de_genes %>% filter(logFC < 0) %>% nrow()` genes with negatively decreasing changes in expression (logFC), `r de_genes %>% filter(logFC <= -1) %>% nrow()` of which have logFC <= -1.  
+
+
+
+```{r warning=FALSE}
+de_genes = de_genes %>%
+  merge(., anno_df, by = "gene_id_parent")
+
+all_genes = all_genes %>%
+  merge(., anno_df, by = "gene_id_parent")
+
+
+# positive logFC are up in iso therefore down in treatment
+lowest_19_genes = de_genes %>%
+  dplyr::select(-transcript_id, -gene_id) %>%
+  distinct() %>%
+  filter(logFC >= 1) %>%
+  arrange(FDR) %>%
+  head(19) %>%
+  pull(gene_name.y)
+
+top_gene = de_genes %>%
+  filter(logFC <= -1) %>%
+  pull(gene_name.y) %>%
+  unique()
+
+
+volcano_genes = all_genes
+
+volcano_genes$logFC = volcano_genes$logFC * -1
+
+volcano_genes = volcano_genes %>%
+  dplyr::select(-transcript_id, -gene_id) %>%
+  distinct() %>%
+  mutate(diff_exp = NA) %>%
+  mutate(plot_label = NA) %>%
+  dplyr::rename("gene_name" = "gene_name.y") %>%
+  mutate(plot_label = case_when(gene_name %in% lowest_19_genes ~ gene_name,
+                                gene_name %in% top_gene ~ gene_name)) %>%
+  mutate(diff_exp = case_when(logFC >= 1 & FDR < 0.05 ~ "Up", 
+                              logFC <= -1 & FDR < 0.05  ~ "Down",
+                              TRUE ~ "Not significant")) 
+
+
+
+
+volcano_plot = ggplot(volcano_genes, aes(x = logFC, y=-log10(FDR), colour = diff_exp, label = plot_label)) + 
+  geom_point(alpha = 0.6) + 
+  geom_text_repel(show.legend = FALSE) +
+  theme_minimal()  +
+  scale_color_manual(values=c("#a11668", "#d4d2d2", "#88CCCC")) +
+  geom_hline(yintercept=-log10(0.05), 
+             col="grey",
+             linetype = "dashed") +
+  geom_vline(xintercept=-1, 
+             col="grey",
+             linetype = "dashed") +
+  geom_vline(xintercept=1, 
+             col="grey",
+             linetype = "dashed") + 
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(), 
+axis.line = element_line(colour = "grey70")) +
+  expand_limits(x = c(-6, 6)) + 
+  expand_limits(y = c(0, 20)) + 
+  labs(colour='') +
+  theme(legend.position = c(0.9, 0.75)) + 
+  theme(legend.key = element_rect(colour = 'grey', fill = 'white', linetype='solid'))
+
+  
+
+
+# ggsave(volcano_plot, filename = paste0(OUTDIR, "placenta_volcano_plot.png"), device = "png", height = 8, width = 8)
+
+```
+
+#### What genes are most DE?
+Here's a volcano of the top 30 differentially expressed genes, chosen by FDR value. The dashed lines show the logFC cut-off values of -1 and +1 for up- and down- regulated genes respectively. They are coloured blue for down- and red for up- regulated genes too for ease. We can see a lot of collagen related genes are down-regulated with aLy6G treatment.
+```{r}
+volcano_png = list.files(OUTDIR, full.names = TRUE, pattern = "placenta_volcano_plot.png")
+include_graphics(volcano_png)
+```
+
+
+
+```{r}
+# Loading in SIGORA results
+sigora = fread(SIGORA)
+
+```
+#### What pathways are affected by differential expression of these genes?  
+We have used the `SIGORA` Rpackage for pathway enrichment analysis. `SIGORA` involves the identification of statistically over-represented Pathway Gene-Pair Signatures (Pathway-GPS) (i.e. weighted pairs of genes which <i>uniquely</i> occur together in a single pathway). Analysis using the differentially expressed gene list found `r sigora %>% filter(Bonferroni <= 0.05) %>% nrow()` significantly associated pathways (p < 0.05, Bonferroni corrected).  
+
+These are:  
+
+
+```{r}
+
+table_cols = c("pathway_ID", "Description", "pval(BF)")
+sigora %>% 
+  filter(Bonferroni <= 0.05) %>%
+  dplyr::select(pathwy.id, description, pvalues) %>%
+  arrange(pvalues) %>%
+  ggtexttable(., 
+              rows=NULL, 
+              cols = table_cols,
+              theme = ttheme("light", base_size =8))
+
+```
+  
+  
+  
+  
+```{r}
+#Subset the data based on a Bonferroni value < 0.05
+sig.data.filt<-subset(sigora,Bonferroni < 0.05)
+head(sig.data.filt)
+#Reorder the dataset based on successes variable values for plotting
+sig.data.filt<-sig.data.filt[rev(order(sig.data.filt$Bonferroni)),]
+
+sig.data.filt$pval = -log10(sig.data.filt$Bonferroni)
+#########
+# Plot #
+#########
+sig_plot = ggbarplot(sig.data.filt, "description","pval",
+ fill = "#e072b3", color = "#e072b3",
+ label = FALSE,
+ ylab = "-log10(adj. Pvalue)",
+ xlab = "")
+
+sig_plot = sig_plot +coord_flip()
+
+# ggsave(sig_plot, filename = paste0(OUTDIR, "sigora_pathway_plot.png"), device = "png", height = 8, width = 8)
+
+sig_plot
+```
+
+
+
+
+```{r}
+
+tpms$iso_avg = rowMeans(tpms[,c(2,5,7)])
+tpms$aLy6g_avg = rowMeans(tpms[,c(3,4,6)])
+
+tpms = tpms %>%
+  #rename("gene_id_parent" = "gene_id") %>%
+  mutate(gene_id_parent = stringr::str_split(gene_id, "\\.") %>%
+  map_chr(1))
+
+```
+
+
+```{r}
+######## ECM heatmap
+
+ecm_gene_ids = fread(ECM_GENES, header=TRUE) %>%
+  dplyr::rename("gene_id_parent" = "Gene_ID")
+
+# correcting directionality of logFC to reflect treatment
+ecm_genes = merge(de_genes,ecm_gene_ids,
+                       by = "gene_id_parent") %>%
+  dplyr::select(-transcript_id, gene_name.y) %>%
+  distinct() %>%
+  mutate(logFC = logFC * -1)
+
+
+heatmap_data = merge(ecm_genes, tpms, by = "gene_id") %>%
+  dplyr::select(gene_name.y, logFC, FDR, iso_avg, aLy6g_avg)
+
+heatmap_data = heatmap_data[order(match(heatmap_data$gene_name.y,ecm_gene_ids$Symbol)),]
+
+heatmap_data$gene_name.y <- factor(heatmap_data$gene_name.y, levels = heatmap_data$gene_name.y)
+
+heatmap_data_melt = melt(heatmap_data, measure.vars = c("iso_avg", "aLy6g_avg"))
+
+heatmap_data_melt = heatmap_data_melt %>%
+    mutate(variable=str_replace(variable,"iso_avg", "iso")) %>%
+    mutate(variable=str_replace(variable,"aLy6g_avg", "aLy6g"))
+
+
+col1 = colorRampPalette(c("#9bbfe8","#1875de","#03356e"))(3) #changing the number in the bracket alters the gradient
+col2 <- rep("snow", 1) #can add in diff sections on gradient
+
+colors <- c(col2,col1)
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+
+### tpm
+heatmap_plot = ggplot(heatmap_data_melt, aes(x = variable, y = gene_name.y, fill = (log10(value+1)))) +
+   theme(panel.border=element_rect(fill = NA, colour= 'black',size=10)) +
+  geom_tile(colour="black") +
+  ylim(rev(levels(as.factor(heatmap_data_melt$gene_name.y)))) +
+  scale_fill_gradientn(colours = colors,
+                       limits=c(0,4),
+                       breaks=c(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4), 
+                       labels=c("0","0.5", "1", "1.5","2","2.5","3", "3.5", "4"),
+                       guide = guide_colorbar(frame.colour = "black")) + 
+  coord_fixed() + 
+  theme_bw(base_size = 8, base_family = "") + 
+  theme(text = element_text(size=8),
+        axis.text.x = element_text(angle = 90,vjust=0.5,hjust=0.5,face="bold")) +
+  theme(plot.margin=unit(c(0.5, 0.5, 0.5 , 0.5), "cm")) + 
+  theme(axis.text.y = element_text(size=8,face="bold.italic",colour="black")) + 
+  theme(axis.text.x = element_text(size=8,face="bold",colour = "black")) + 
+  xlab("") + 
+  ylab("") + 
+  theme(legend.key = element_rect(colour="black", size=8)) + 
+  theme(legend.position=c(0.415, 0.7))  
+
+leg=expression(paste(Log[10],"",(TPM +1)))
+
+heatmap_plot = heatmap_plot +
+  labs(fill=leg)
+
+
+legend <- g_legend(heatmap_plot)
+heatmap_plot <- heatmap_plot + 
+  theme(legend.position="none")
+
+
+
+
+
+### logFC
+# Filtering here for iso_avg because the logFC values were duplicated at the melt step. It doesn't matter which I filter by, I only need one col.
+
+col3 = colorRampPalette(rev(c("snow","#e6b3d1","#e072b3","#6b0240")))(6) #changing the number in the bracket alters the gradient
+
+
+
+heatmap_plot_2 = heatmap_data_melt %>% filter(variable == "aLy6g") %>%
+  ggplot(., aes(x = variable, y = gene_name.y, fill = (logFC))) +
+   theme(panel.border=element_rect(fill = NA, colour= 'black',size=10)) +
+  geom_tile(colour="black") +
+  ylim(rev(levels(as.factor(heatmap_data_melt$gene_name.y)))) +
+  scale_fill_gradientn(colours = col3,
+                       limits=c(-5, 0),
+                       breaks=c(-5,-4.5,-4, -3.5, -3, -2.5, -2, -1.5, -1,-0.5, 0), 
+                       labels=c("-5","-4.5","-4","-3.5","-3","-2.5","-2","-1.5","-1" , "-0.5","0"), 
+                       guide = guide_colorbar(frame.colour = "black")) + 
+  coord_fixed() + 
+  theme_bw(base_size = 8, base_family = "") + 
+  theme(text = element_text(size=8),
+        axis.text.x = element_text(angle = 90,vjust=0.5,hjust=0.5,face="bold")) +
+  theme(plot.margin=unit(c(0.5, 0.5, 0.5, -26), "cm")) +
+  theme(axis.text.y = element_text(size=8,face="bold.italic",colour="black")) + 
+  theme(axis.text.x = element_text(size=8,face="bold",colour = "black")) + 
+  xlab("") + 
+  ylab("") + 
+  theme(legend.key = element_rect(colour="black", size=8)) + 
+  theme(legend.position=c(0.4, 0.5)) +
+  theme(axis.text.y=element_blank()) +
+  theme(axis.text.x = element_text(colour="white"),
+        axis.ticks.x = element_blank())
+  
+leg2=expression(paste(Log[2],"",FC))
+
+heatmap_plot_2 = heatmap_plot_2 +
+  labs(fill=leg2)
+
+
+legend_2 <- g_legend(heatmap_plot_2)
+heatmap_plot_2 <- heatmap_plot_2 + 
+  theme(legend.position="none")
+
+
+
+
+############# Add custom lines and labels
+annotation_custom2 <- function (grob, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, data) {
+    layer(data = data, stat = StatIdentity, position = PositionIdentity, 
+          geom = ggplot2:::GeomCustomAnn,
+          inherit.aes = TRUE, params = list(grob = grob, 
+                                            xmin = xmin, xmax = xmax, 
+                                            ymin = ymin, ymax = ymax))
+  }
+
+
+cat_names = unique(ecm_gene_ids$Annotation_RM)
+
+cat_names[6] = "Collagen Biosynthesis \n& Organisation"
+
+Text1 = textGrob(cat_names[1], gp=gpar(fontsize=10,fontface="bold"))
+Text2 = textGrob(cat_names[2], gp=gpar(fontsize=10,fontface="bold"))
+Text3 = textGrob(cat_names[3], gp=gpar(fontsize=10,fontface="bold"))
+Text4 = textGrob(cat_names[4], gp=gpar(fontsize=10,fontface="bold"))
+Text5 = textGrob(cat_names[5], gp=gpar(fontsize=10,fontface="bold"))
+Text6 = textGrob(cat_names[6], gp=gpar(fontsize=10,fontface="bold"))
+Text7 = textGrob(cat_names[7], gp=gpar(fontsize=10,fontface="bold"))
+
+
+
+p1 <-heatmap_plot + 
+  annotation_custom2(Text1,  xmin = -5, xmax = -5, ymin = 25, ymax = 24, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -2, ymin = 25, ymax = 24, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 25, ymax = 25, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 24, ymax = 24, data = heatmap_data_melt) +
+  annotation_custom2(Text2,  xmin = -5, xmax = -5, ymin = 23, ymax = 23, data = heatmap_data_melt) +
+  annotation_custom2(Text3,  xmin = -5, xmax = -5, ymin = 22, ymax = 21, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -2, ymin = 22, ymax = 21, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 22, ymax = 22, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 21, ymax = 21, data = heatmap_data_melt) +
+  annotation_custom2(Text4,  xmin = -5, xmax = -5, ymin = 20, ymax = 20, data = heatmap_data_melt) +
+  annotation_custom2(Text5,  xmin = -5, xmax = -5, ymin = 19, ymax = 9, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -2, ymin = 19, ymax = 9, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 19, ymax = 19, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 9, ymax = 9, data = heatmap_data_melt)  +
+  annotation_custom2(Text6,  xmin = -5, xmax = -5, ymin = 8, ymax = 6, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -2, ymin = 8, ymax = 6, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 8, ymax = 8, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 6, ymax = 6, data = heatmap_data_melt) +
+  annotation_custom2(Text7,  xmin = -5, xmax = -5, ymin = 5, ymax = 1, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -2, ymin = 5, ymax = 1, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 5, ymax = 5, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2, xmax = -1.5, ymin = 1, ymax = 1, data = heatmap_data_melt)
+
+
+
+heatmap_plot_anno <- ggplot_gtable(ggplot_build(p1))
+heatmap_plot_anno$layout[grepl("panel", heatmap_plot_anno$layout$name), ]$clip <- "off"
+
+
+
+grid.newpage()
+grid.arrange(heatmap_plot_anno, heatmap_plot_2, ncol = 2)
+grid.draw(legend)
+grid.draw(legend_2)
+
+# plot saved from Rstudio viewer as ecm_heatmap.pdf
+
+
+```
+
+
+
+
+
+```{r}
+######## nutrient transport heatmap
+
+nutrient_gene_ids = fread(NUTRIENT_TRANSPORT_GENES, header=TRUE) %>%
+  dplyr::rename("gene_id_parent" = "Gene_ID")
+
+# correcting directionality of logFC to reflect treatment
+nutrient_genes = merge(de_genes,nutrient_gene_ids,
+                       by = "gene_id_parent") %>%
+  dplyr::select(-transcript_id, gene_name.y) %>%
+  distinct() %>%
+  mutate(logFC = logFC * -1)
+
+
+heatmap_data = merge(nutrient_genes, tpms, by = "gene_id") %>%
+  dplyr::select(gene_name.y, logFC, FDR, iso_avg, aLy6g_avg)
+
+heatmap_data = heatmap_data[order(match(heatmap_data$gene_name.y,nutrient_gene_ids$Symbol)),]
+
+heatmap_data$gene_name.y <- factor(heatmap_data$gene_name.y, levels = heatmap_data$gene_name.y)
+
+heatmap_data_melt = melt(heatmap_data, measure.vars = c("iso_avg", "aLy6g_avg"))
+
+heatmap_data_melt = heatmap_data_melt %>%
+    mutate(variable=str_replace(variable,"iso_avg", "iso")) %>%
+    mutate(variable=str_replace(variable,"aLy6g_avg", "aLy6g"))
+
+
+col1 = colorRampPalette(c("#9bbfe8","#1875de","#03356e"))(3) #changing the number in the bracket alters the gradient
+col2 <- rep("snow", 1) #can add in diff sections on gradient
+
+colors <- c(col2,col1)
+
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+
+### tpm
+heatmap_plot = ggplot(heatmap_data_melt, aes(x = variable, y = gene_name.y, fill = (log10(value+1)))) +
+   theme(panel.border=element_rect(fill = NA, colour= 'black',size=10)) +
+  geom_tile(colour="black") +
+  ylim(rev(levels(as.factor(heatmap_data_melt$gene_name.y)))) +
+  scale_fill_gradientn(colours = colors,
+                       limits=c(0,4),
+                       breaks=c(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4), 
+                       labels=c("0","0.5", "1", "1.5","2","2.5","3", "3.5", "4"),
+                       guide = guide_colorbar(frame.colour = "black")) + 
+  coord_fixed() + 
+  theme_bw(base_size = 8, base_family = "") + 
+  theme(text = element_text(size=8),
+        axis.text.x = element_text(angle = 90,vjust=0.5,hjust=0.5,face="bold")) +
+  theme(plot.margin=unit(c(0.5, 0.5, 0.5 , 0.5), "cm")) + 
+  theme(axis.text.y = element_text(size=8,face="bold.italic",colour="black")) + 
+  theme(axis.text.x = element_text(size=8,face="bold",colour = "black")) + 
+  xlab("") + 
+  ylab("") + 
+  theme(legend.key = element_rect(colour="black", size=8)) + 
+  theme(legend.position=c(0.415, 0.7))  
+
+leg=expression(paste(Log[10],"",(TPM +1)))
+
+heatmap_plot = heatmap_plot +
+  labs(fill=leg)
+
+
+legend <- g_legend(heatmap_plot)
+heatmap_plot <- heatmap_plot + 
+  theme(legend.position="none")
+
+
+
+
+
+### logFC
+# Filtering here for iso_avg because the logFC values were duplicated at the melt step. It doesn't matter which I filter by, I only need one col.
+
+col3 = colorRampPalette(rev(c("snow","#e6b3d1","#e072b3","#6b0240")))(6) #changing the number in the bracket alters the gradient
+
+
+
+heatmap_plot_2 = heatmap_data_melt %>% filter(variable == "aLy6g") %>%
+  ggplot(., aes(x = variable, y = gene_name.y, fill = (logFC))) +
+   theme(panel.border=element_rect(fill = NA, colour= 'black',size=10)) +
+  geom_tile(colour="black") +
+  ylim(rev(levels(as.factor(heatmap_data_melt$gene_name.y)))) +
+  scale_fill_gradientn(colours = col3,
+                       limits=c(-5, 0),
+                       breaks=c(-5,-4.5,-4, -3.5, -3, -2.5, -2, -1.5, -1,-0.5, 0), 
+                       labels=c("-5","-4.5","-4","-3.5","-3","-2.5","-2","-1.5","-1" , "-0.5","0"), 
+                       guide = guide_colorbar(frame.colour = "black")) + 
+  coord_fixed() + 
+  theme_bw(base_size = 8, base_family = "") + 
+  theme(text = element_text(size=8),
+        axis.text.x = element_text(angle = 90,vjust=0.5,hjust=0.5,face="bold")) +
+  theme(plot.margin=unit(c(0.5, 0.5, 0.5, -26), "cm")) +
+  theme(axis.text.y = element_text(size=8,face="bold.italic",colour="black")) + 
+  theme(axis.text.x = element_text(size=8,face="bold",colour = "black")) + 
+  xlab("") + 
+  ylab("") + 
+  theme(legend.key = element_rect(colour="black", size=8)) + 
+  theme(legend.position=c(0.4, 0.5)) +
+  theme(axis.text.y=element_blank()) +
+  theme(axis.text.x = element_text(colour="white"),
+        axis.ticks.x = element_blank())
+  
+leg2=expression(paste(Log[2],"",FC))
+
+heatmap_plot_2 = heatmap_plot_2 +
+  labs(fill=leg2)
+
+
+legend_2 <- g_legend(heatmap_plot_2)
+heatmap_plot_2 <- heatmap_plot_2 + 
+  theme(legend.position="none")
+
+
+
+
+############# Add custom lines and labels
+annotation_custom2 <- function (grob, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, data) {
+    layer(data = data, stat = StatIdentity, position = PositionIdentity, 
+          geom = ggplot2:::GeomCustomAnn,
+          inherit.aes = TRUE, params = list(grob = grob, 
+                                            xmin = xmin, xmax = xmax, 
+                                            ymin = ymin, ymax = ymax))
+  }
+
+
+cat_names = unique(nutrient_gene_ids$Annotation_RM)
+
+cat_names[1] = "Lipid \nmetabolism"
+cat_names[3] = "Carbohydrate &\n glucose"
+cat_names[4] = "Amino acid &\n peptide transport"
+cat_names[5] = "General nutrient\n transport function"
+cat_names[6] = "Iron &\n zinc transport"
+
+
+Text1 = textGrob(cat_names[1], gp=gpar(fontsize=10,fontface="bold"))
+Text2 = textGrob(cat_names[2], gp=gpar(fontsize=10,fontface="bold"))
+Text3 = textGrob(cat_names[3], gp=gpar(fontsize=10,fontface="bold"))
+Text4 = textGrob(cat_names[4], gp=gpar(fontsize=10,fontface="bold"))
+Text5 = textGrob(cat_names[5], gp=gpar(fontsize=10,fontface="bold"))
+Text6 = textGrob(cat_names[6], gp=gpar(fontsize=10,fontface="bold"))
+
+
+
+p1 <-heatmap_plot + 
+  annotation_custom2(Text1,  xmin = -5.5, xmax = -5.5, ymin = 30, ymax = 19, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2.5, ymin = 30, ymax = 19, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 30, ymax = 30, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 19, ymax = 19, data = heatmap_data_melt) +
+  
+  annotation_custom2(Text3,  xmin = -5.5, xmax = -5.5, ymin = 18, ymax = 16, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2.5, ymin = 18, ymax = 16, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 18, ymax = 18, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 16, ymax = 16, data = heatmap_data_melt) +
+  
+  annotation_custom2(Text4,  xmin = -5.5, xmax = -5.5, ymin = 15, ymax = 11, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2.5, ymin = 15, ymax = 11, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 15, ymax = 15, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 11, ymax = 11, data = heatmap_data_melt)  +
+  
+  annotation_custom2(Text5,  xmin = -5.5, xmax = -5.5, ymin = 10, ymax = 9, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2.5, ymin = 10, ymax = 9, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 10, ymax = 10, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 9, ymax = 9, data = heatmap_data_melt) +
+  
+  annotation_custom2(Text6,  xmin = -5.5, xmax = -5.5, ymin = 8, ymax = 1, data = heatmap_data_melt) +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2.5, ymin = 8, ymax = 1, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 8, ymax = 8, data = heatmap_data_melt)  +
+  annotation_custom2(linesGrob(), xmin = -2.5, xmax = -2, ymin = 1, ymax = 1, data = heatmap_data_melt)
+
+
+
+heatmap_plot_anno <- ggplot_gtable(ggplot_build(p1))
+heatmap_plot_anno$layout[grepl("panel", heatmap_plot_anno$layout$name), ]$clip <- "off"
+
+
+
+grid.newpage()
+grid.arrange(heatmap_plot_anno, heatmap_plot_2, ncol = 2)
+grid.draw(legend)
+grid.draw(legend_2)
+
+
+
+# plot saved from Rstudio viewer as nutrient_transport_heatmap.pdf
+
+
+```
+
+
+
+
