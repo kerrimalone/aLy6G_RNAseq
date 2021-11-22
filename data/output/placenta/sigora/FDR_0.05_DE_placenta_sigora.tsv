@@ -1,0 +1,115 @@
+pathwy.id	description	pvalues	Bonferroni	successes	PathwaySize	N	sample.size	Genes
+R-MMU-8957275	Post-translational protein phosphorylation	1.06E-120	8.35E-118	113.25	3319.56	512907.2	657.76	Afp;Igfbp4;Itih2;Serpina10;Mfi2;Fam20c;Apol7a;C4b;Csf1;Tnc;Serpind1;Serpinc1;Pcsk9;Ahsg;C3;Gas6;Gpc3;Trf;Apoe;Serpina1c;Apob;Kng2;Alb;Fga;Fgg
+R-MMU-8948216	Collagen chain trimerization	1.04E-60	8.24E-58	39.21	380.95	512907.2	657.76	Col16a1;Col14a1;Col18a1;Col4a6;Col6a1;Col6a2;Col9a3;Col11a1;Col11a2;Col27a1;Col4a5;Col1a1;Col1a2;Col2a1;Col5a1
+R-MMU-425407	SLC-mediated transmembrane transport	4.14E-39	3.27E-36	63.72	5423.15	512907.2	657.76	Slc5a1;Slco4c1;Slc34a3;Slc26a6;Slc20a2;Slc15a1;Slc2a2;Slc16a7;Slc13a3;Slc47a1;Slco1b2;Slc43a2;Slc36a2;Slc3a1;Slc18a1;Slc22a8;Alb;Heph;Slc40a1;Slc39a8;Slc39a4;Slc7a9;Slc44a4;Slc26a1;Slc6a13
+R-MMU-114608	Platelet degranulation 	3.78E-33	2.99E-30	53.92	4535.96	512907.2	657.76	Ahsg;Apoh;Itih3;Serpinf2;Trf;Islr;Gas6;Plg;Kng2;Serpina1c;Alb;Fgb;Fga;Fgg
+R-MMU-425366	"Transport of bile salts, organic acids, metal ions, amines"	1.64E-25	1.30E-22	28.21	1247.04	512907.2	657.76	Slc13a3;Slc16a7;Slc47a1;Slc22a8;Slc18a1;Slc44a4;Heph;Slc40a1;Slc6a13;Slc39a8;Slc39a4
+R-MMU-1650814	Collagen biosynthesis & modifying enzymes	3.12E-19	2.47E-16	18.84	588.96	512907.2	657.76	P3h3;Pcolce;Col16a1;Col14a1;Col18a1;Col9a3;Col27a1;Col11a1;Col11a2;Col6a1;Col6a2;Col4a6;Col2a1;Col4a5;Col5a1;Col1a1;Col1a2
+R-MMU-9006934	Signaling by Receptor Tyrosine Kinases	1.52E-16	1.20E-13	43.22	7089.63	512907.2	657.76	Mst1;Hpn;Nrp2;Spint1;Hgfac;Atp6v0a4;Grb10;Erbb3;Klb;Plg;Fgf1;Erbb2;Col9a3;Col6a1;Col6a2;Col4a5;Col27a1;Col11a1;Col11a2;Lamb3;Col1a1;Col1a2;Col5a1;Col2a1
+R-MMU-977606	Regulation of Complement cascade	8.10E-15	6.40E-12	13.84	385.73	512907.2	657.76	C9;Cfi;Cpn1;C2;Vtn;C4b;F2;C3
+R-MMU-425393	Transport of inorganic cations/anions 	6.18E-11	4.89E-08	21.59	2604.98	512907.2	657.76	Slc34a3;Slc26a6;Slc20a2;Slc15a1;Slc26a1;Slc3a1;Slc43a2;Slc36a2;Slc7a9
+R-MMU-140875	Common Pathway of Fibrin Clot Formation	5.81E-10	4.60E-07	6.56	70.64	512907.2	657.76	F13b;Serpina5;Fgb;F10;Fga;Fgg;Serpinc1;Serpind1;F2
+R-MMU-6806834	Signaling by MET	1.21E-09	9.60E-07	9.68	350.54	512907.2	657.76	Spint1;Hgfac;Col27a1;Col11a1;Col11a2;Lamb3;Col2a1;Col5a1;Col1a1;Col1a2
+R-MMU-159782	Aminoterminal propeptides editing	1.36E-07	0.0001077	4.5	34.78	512907.2	657.76	F10;Proz;F2;Gas6
+R-MMU-156588	Glucuronidation	2.15E-07	0.0001702	6	190	512907.2	657.76	Ugt2b34;Ugt3a2;Ugt1a7c;Ugt1a6a
+R-MMU-352230	Amino acid transport across the plasma membrane	1.07E-05	0.00844	6	374.43	512907.2	657.76	Slc3a1;Slc43a2;Slc36a2;Slc7a9
+R-MMU-425410	Metal ion SLC transporters	1.77E-05	0.01403	4	117	512907.2	657.76	Heph;Slc40a1;Slc39a8;Slc39a4
+R-MMU-2168880	Scavenging of heme from plasma	6.48E-05	0.05123	3.6	59.49	512907.2	657.76	Ambp;Hpx;Apol7a;Alb
+R-MMU-3000178	ECM proteoglycans	8.90E-05	0.07038	4.99	176.99	512907.2	657.76	Hapln1;Tnc;Vtn;Col9a3;Col6a1;Col6a2;Col2a1;Col5a1;Col1a1;Col1a2
+R-MMU-1474244	Extracellular matrix organization	0.0001448	0.1145	19.84	5555.88	512907.2	657.76	Nid2;Hapln1;P3h3;Pcolce;Tnc;Loxl1;Plg;Col14a1;Fga;Fgb;Fgg;Vtn;Cdh1;Col27a1;Col11a1;Col11a2;Col16a1;Lamb3;Col18a1;Col9a3;Col4a6;Col2a1;Col4a5;Col5a1;Col6a1;Col6a2;Col1a1;Col1a2
+R-MMU-2022090	Assembly of collagen fibrils and other multimeric structures	0.0002192	0.1734	4.79	224.26	512907.2	657.76	Loxl1;Lamb3;Col14a1;Col18a1;Col9a3;Col6a1;Col6a2;Col27a1;Col11a1;Col11a2;Col2a1;Col5a1
+R-MMU-156580	Phase II - Conjugation of compounds	0.0006423	0.5081	8.66	1441.31	512907.2	657.76	Slc26a1;Gsta3;Gstt1;Mgst1;Ugt2b34;Ugt3a2;Ugt1a7c;Ugt1a6a
+R-MMU-3000157	Laminin interactions	0.0007945	0.6284	2.19	32.07	512907.2	657.76	Nid2;Col18a1;Lamb3;Col4a6;Col4a5
+R-MMU-2243919	Crosslinking of collagen fibrils	0.001857	1	2.53	48.78	512907.2	657.76	Loxl1;Col4a6;Col4a5;Col1a1;Col1a2
+R-MMU-75876	Synthesis of very long-chain fatty acyl-CoAs	0.002993	1	3	220	512907.2	657.76	Acsl1;Elovl2;Elovl7
+R-MMU-216083	Integrin cell surface interactions	0.007303	1	4.7	586.92	512907.2	657.76	Tnc;Col16a1;Fgb;Fga;Fgg;Cdh1;Vtn;Col18a1;Col4a6;Col4a5;Col9a3;Col6a1;Col6a2;Col2a1;Col5a1
+R-MMU-156590	Glutathione conjugation	0.008633	1	3	322.92	512907.2	657.76	Gsta3;Gstt1;Mgst1
+R-MMU-917937	Iron uptake and transport	0.008926	1	3.13	327.03	512907.2	657.76	Cybrd1;Heph;Slc40a1;Atp6v0a4;Trf
+R-MMU-211859	Biological oxidations	0.01091	1	9.53	2786.25	512907.2	657.76	Aadac;Aldh1b1;Cyp2s1;Cyp21a1;Ugt2b34;Gsta3;Gstt1;Ugt3a2;Ugt1a7c;Mgst1;Ugt1a6a;Slc26a1
+R-MMU-8956319	Nucleobase catabolism	0.01182	1	3	362.95	512907.2	657.76	Entpd2;Entpd5;Entpd3
+R-MMU-8963888	Chylomicron assembly	0.01402	1	1.24	10.63	512907.2	657.76	Mttp;Apoe;Apob
+R-MMU-8874081	MET activates PTK2 signaling	0.01937	1	2.34	164.57	512907.2	657.76	Lamb3;Col11a1;Col11a2;Col27a1;Col2a1;Col5a1
+R-MMU-982772	Growth hormone receptor signaling	0.02159	1	1	17.04	512907.2	657.76	Ghr;Prlr
+R-MMU-8964058	HDL remodeling	0.02785	1	1.49	21.8	512907.2	657.76	Lcat;Alb;Apoe
+R-MMU-75105	Fatty acyl-CoA biosynthesis	0.03026	1	2.25	210.38	512907.2	657.76	Scd2;Acsl1;Elovl2;Elovl7
+R-MMU-166663	Initial triggering of complement	0.04148	1	1.27	33.32	512907.2	657.76	Colec10;C2;C4b;C3
+R-MMU-75109	Triglyceride biosynthesis	0.04148	1	1.42	32.6	512907.2	657.76	Mogat2;Dgat2;Gpam
+R-MMU-8963743	Digestion and absorption	0.04516	1	1.37	36.19	512907.2	657.76	Guca2b;Slc5a1;Slc2a2;Mgam
+R-MMU-879518	Transport of organic anions	0.05249	1	1.37	42.47	512907.2	657.76	Slco4c1;Slco1b2;Alb
+R-MMU-71291	Metabolism of amino acids and derivatives	0.06238	1	20.5	10671.42	512907.2	657.76	Gpt2;Ftcd;Sardh;Aldh4a1;Bhmt;Kmo;Gldc;Dhtkd1
+R-MMU-8963899	Plasma lipoprotein remodeling	0.06458	1	1.76	52.18	512907.2	657.76	Lcat;Lipc;Plg;Apob;Alb;Apoe
+R-MMU-2173782	Binding and Uptake of Ligands by Scavenger Receptors	0.07769	1	1.1	63.05	512907.2	657.76	Apoe;Ambp;Hpx;Apob
+R-MMU-435354	Zinc transporters	0.08124	1	1	66	512907.2	657.76	Slc39a8;Slc39a4
+R-MMU-8957322	Metabolism of steroids	0.0827	1	5.94	1788.55	512907.2	657.76	Gc;Dhcr24;Cyp21a1;Osbpl6;Slco1b2;Slc27a2;Alb
+R-MMU-194068	Bile acid and bile salt metabolism	0.1022	1	1.05	84	512907.2	657.76	Osbpl6;Slco1b2;Alb;Slc27a2
+R-MMU-449836	Other interleukin signaling	0.1032	1	4.41	1377.87	512907.2	657.76	Csf1;Il17rd;Fgb;Fga;Fgg;Erbb3;Erbb2;Klb;Fgf1
+R-MMU-888590	"GABA synthesis, release, reuptake and degradation"	0.1034	1	1	85.02	512907.2	657.76	Slc6a13;Abat
+R-MMU-975634	Retinoid metabolism and transport	0.1123	1	2.24	445.32	512907.2	657.76	Lrp2;Gpc3;Apoe;Apob
+R-MMU-166658	Complement cascade	0.1194	1	1.68	99.05	512907.2	657.76	Colec10;C9;Cfi;Cpn1;Vtn;F2
+R-MMU-1474290	Collagen formation	0.194	1	1.91	167.81	512907.2	657.76	Loxl1;Lamb3;P3h3;Pcolce;Col16a1
+R-MMU-382556	ABC-family proteins mediated transport	0.1964	1	2.34	634.88	512907.2	657.76	Abcc2;Abcc6;Abca3
+R-MMU-983712	Ion channel transport	0.2077	1	5.02	2445.34	512907.2	657.76	Atp7b;Atp7a;Atp6v0a4;Clcn5;Ano9;Mcoln3;Mcoln2
+R-MMU-174824	"Plasma lipoprotein assembly, remodeling, and clearance"	0.2084	1	1.66	182.23	512907.2	657.76	Mttp;Pcsk9;Lcat;Plg;Lipc;Alb
+R-MMU-71387	Metabolism of carbohydrates	0.2464	1	10.59	6005.3	512907.2	657.76	Man2b2;Glyctk;Slc37a4;Fut4;Ogn;Fmod;Slc26a1;Gpc3
+R-MMU-389661	Glyoxylate metabolism and glycine degradation	0.2586	1	1	232.71	512907.2	657.76	Gldc;Dhtkd1
+R-MMU-111465	Apoptotic cleavage of cellular proteins	0.2948	1	1.42	272.07	512907.2	657.76	Stk26;Ocln;Cdh1
+R-MMU-3295583	TRP channels	0.3188	1	1	298.72	512907.2	657.76	Mcoln3;Mcoln2
+R-MMU-2672351	Stimuli-sensing channels	0.5584	1	4	3082.78	512907.2	657.76	Clcn5;Ano9;Mcoln3;Mcoln2
+R-MMU-8856825	Cargo recognition for clathrin-mediated endocytosis	0.5907	1	2	1547.81	512907.2	657.76	Dab2;Lrp2;Fzd4;Trf;Apob
+R-MMU-211945	Phase I - Functionalization of compounds	0.5932	1	2.65	1554.83	512907.2	657.76	Aadac;Aldh1b1;Cyp21a1;Cyp2s1
+R-MMU-8978868	Fatty acid metabolism	0.6009	1	4.32	3254.52	512907.2	657.76	Faah;Slc27a2;Ephx2;Scd2;Acsl1;Elovl2;Elovl7
+R-MMU-936837	Ion transport by P-type ATPases	0.6034	1	1	719.94	512907.2	657.76	Atp7a;Atp7b
+R-MMU-76002	"Platelet activation, signaling and aggregation"	0.6338	1	3.4	2543.23	512907.2	657.76	F2;Col1a1;Col1a2;Apoh;Itih3;Islr;Serpinf2;Ahsg;Trf;Serpina1c;Alb;Kng2;Plg
+R-MMU-163125	Post-translational modification: synthesis of GPI-anchored proteins	0.6436	1	3.87	2581.28	512907.2	657.76	Pgap1;Lypd8;Mfi2;Bst1
+R-MMU-196854	Metabolism of vitamins and cofactors	0.6876	1	2.66	1853.79	512907.2	657.76	Slc23a1;Aldh1l1;Lrp2;Bst1;Gpc3;Apoe;Apob
+R-MMU-1630316	Glycosaminoglycan metabolism	0.7539	1	1.04	1090.83	512907.2	657.76	Slc26a1;Gpc3;Fmod;Ogn
+R-MMU-202733	Cell surface interactions at the vascular wall	0.8411	1	1.99	1431.02	512907.2	657.76	Cxadr;Slc7a9;Apob;Gas6;F2;Col1a1;Col1a2
+R-MMU-196849	Metabolism of water-soluble vitamins and cofactors	0.9099	1	2	3125.49	512907.2	657.76	Slc23a1;Aldh1l1;Bst1
+R-MMU-1280215	Cytokine Signaling in Immune system	0.9316	1	5.92	6707.69	512907.2	657.76	Ghr;Prlr;Il22ra1;Csf1;Il17rd;Fgb;Erbb2;Erbb3;Fga;Klb;Fgg;Fgf1
+R-MMU-1474228	Degradation of the extracellular matrix	0.9575	1	1.07	2454.12	512907.2	657.76	Plg;Cdh1;Col11a1;Col11a2;Lamb3;Col4a6;Col1a1;Col1a2
+R-MMU-1483206	Glycerophospholipid biosynthesis	0.9641	1	1.83	2585.16	512907.2	657.76	Mboat1;Slc44a4;Dgat2;Gpam
+R-MMU-422475	Axon guidance	0.9686	1	2.7	4115.97	512907.2	657.76	Sema4a;Grb10;Erbb2;Col9a3;Col6a1;Col6a2;Col4a5;Col2a1;Col5a1
+R-MMU-446203	Asparagine N-linked glycosylation	0.9893	1	1.13	3521.54	512907.2	657.76	Asgr2;Ctsc;Serpina1c
+R-MMU-2262752	Cellular responses to stress	0.9982	1	1.17	4904.86	512907.2	657.76	Sod3;Hif3a;Hspa12a
+R-MMU-449147	Signaling by Interleukins	0.9988	1	2.67	6964.78	512907.2	657.76	Il22ra1;Csf1;Il17rd;Fgb;Erbb3;Fga;Fgg;Erbb2;Klb;Fgf1
+R-MMU-6809371	Formation of the cornified envelope	0.9997	1	1	6278.13	512907.2	657.76	St14;Krt20
+R-MMU-194315	Signaling by Rho GTPases	0.9999	1	1.02	7067.54	512907.2	657.76	Rhobtb1;Myh14;Was;Cdh1
+R-MMU-112315	Transmission across Chemical Synapses	1	1	0.37	1940	512907.2	657.76	Kcnj15;Abat;Slc6a13
+R-MMU-1266738	Developmental Biology	1	1	5.6	17915.13	512907.2	657.76	St14;Krt20;Cdon;Sema4a;Grb10;Col9a3;Col6a1;Col6a2;Col4a5;Col5a1;Col2a1;Erbb2
+R-MMU-140837	Intrinsic Pathway of Fibrin Clot Formation	1	1	0.54	56.73	512907.2	657.76	Kng2;Serpina5;F10
+R-MMU-140877	Formation of Fibrin Clot (Clotting Cascade)	1	1	0.29	75.41	512907.2	657.76	F13b;Kng2
+R-MMU-1592389	Activation of Matrix Metalloproteinases	1	1	0.35	697.24	512907.2	657.76	Col18a1;Plg
+R-MMU-1660662	Glycosphingolipid metabolism	1	1	0.75	616.31	512907.2	657.76	Ugt8a;Smpd3
+R-MMU-186797	Signaling by PDGF	1	1	0.13	169.48	512907.2	657.76	Col9a3;Plg
+R-MMU-189200	Cellular hexose transport	1	1	0.75	102.96	512907.2	657.76	Slc2a2;Slc5a1
+R-MMU-190828	Gap junction trafficking	1	1	0.5	49.25	512907.2	657.76	Dab2;Gjb1
+R-MMU-192105	Synthesis of bile acids and bile salts	1	1	0.75	164.19	512907.2	657.76	Slc27a2;Osbpl6
+R-MMU-195258	RHO GTPase Effectors	1	1	0.85	4616.16	512907.2	657.76	Myh14;Was;Cdh1
+R-MMU-198933	Immunoregulatory interactions between a Lymphoid and a non-Lymphoid cell	1	1	0.8	2668.24	512907.2	657.76	Cxadr;C3;Col2a1;Col1a1;Col1a2
+R-MMU-201681	TCF dependent signaling in response to WNT	1	1	0.31	2036.88	512907.2	657.76	Fzd4;Sox6
+R-MMU-211897	Cytochrome P450 - arranged by substrate type	1	1	0.29	485.44	512907.2	657.76	Cyp21a1;Cyp2s1
+R-MMU-2142753	Arachidonic acid metabolism	1	1	0.75	495.54	512907.2	657.76	Ephx2;Faah
+R-MMU-2214320	Anchoring fibril formation	1	1	0.8	22.66	512907.2	657.76	Lamb3;Col4a6;Col4a5
+R-MMU-2980736	Peptide hormone metabolism	1	1	0.5	494.93	512907.2	657.76	Dpp4;Enpep
+R-MMU-3000171	Non-integrin membrane-ECM interactions	1	1	0.24	57.1	512907.2	657.76	Vtn;Col11a1;Col11a2
+R-MMU-373755	Semaphorin interactions	1	1	0.28	230.6	512907.2	657.76	Erbb2;Sema4a
+R-MMU-375276	Peptide ligand-binding receptors	1	1	2	12866.97	512907.2	657.76	C3;F2;Kng2
+R-MMU-418555	G alpha (s) signalling events	1	1	0.32	18521.13	512907.2	657.76	Glp1r;Reep6
+R-MMU-418594	G alpha (i) signalling events	1	1	0.23	8280.59	512907.2	657.76	Lrp2;C3;Kng2
+R-MMU-422356	Regulation of insulin secretion	1	1	0.38	159.28	512907.2	657.76	Glp1r;Slc2a2
+R-MMU-442660	Na+/Cl- dependent neurotransmitter transporters	1	1	0.67	65.97	512907.2	657.76	Slc18a1;Slc6a13
+R-MMU-500792	GPCR ligand binding	1	1	0.33	4269.38	512907.2	657.76	Glp1r;C3;Kng2;F2
+R-MMU-5620920	Cargo trafficking to the periciliary membrane	1	1	0.42	371.13	512907.2	657.76	Rab11fip3;Smo
+R-MMU-5635838	Activation of SMO	1	1	0.67	61.07	512907.2	657.76	Smo;Cdon
+R-MMU-5686938	Regulation of TLR by endogenous ligand	1	1	0.07	37.38	512907.2	657.76	Fgb;Apob
+R-MMU-6803157	Antimicrobial peptides	1	1	0.67	1728.51	512907.2	657.76	Atp7a;Lyz2
+R-MMU-74751	Insulin receptor signalling cascade	1	1	0.37	8.9	512907.2	657.76	Grb10;Klb;Fgf1
+R-MMU-74752	Signaling by Insulin receptor	1	1	0.62	198	512907.2	657.76	Atp6v0a4;Grb10;Klb;Fgf1
+R-MMU-76009	Platelet Aggregation (Plug Formation)	1	1	0.16	19.32	512907.2	657.76	F2;Col1a1;Col1a2
+R-MMU-8856828	Clathrin-mediated endocytosis	1	1	0.96	1162.97	512907.2	657.76	Dnajc6;Dab2;Lrp2;Fzd4;Trf;Apob
+R-MMU-8935690	Digestion	1	1	0.75	114.78	512907.2	657.76	Guca2b;Mgam
+R-MMU-8953897	Cellular responses to external stimuli	1	1	0.69	3795.71	512907.2	657.76	Chmp4c;Sod3;Hspa12a;Hif3a
+R-MMU-8964038	LDL clearance	1	1	0.38	74.06	512907.2	657.76	Pcsk9;Apob
+R-MMU-8964043	Plasma lipoprotein clearance	1	1	0.29	94.46	512907.2	657.76	Pcsk9;Lipc
+R-MMU-9033241	Peroxisomal protein import	1	1	0.35	759.92	512907.2	657.76	Ephx2;Slc27a2
+R-MMU-917977	Transferrin endocytosis and recycling	1	1	0.27	93.5	512907.2	657.76	Atp6v0a4;Trf
